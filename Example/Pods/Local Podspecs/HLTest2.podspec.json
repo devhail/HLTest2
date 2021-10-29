@@ -1,0 +1,22 @@
+{
+  "name": "HLTest2",
+  "version": "0.1.0",
+  "summary": "A short description of HLTest2.",
+  "description": "TODO: Add long description of the pod here.",
+  "homepage": "https://github.com/hl/HLTest2",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "hl": "517314473@qq.com"
+  },
+  "source": {
+    "git": "https://github.com/hl/HLTest2.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "9.0"
+  },
+  "source_files": "HLTest2/Classes/**/*"
+}

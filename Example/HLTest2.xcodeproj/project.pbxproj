@@ -37,8 +37,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0138E804A3FA8D7B79F09AE9 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = ../README.md; sourceTree = "<group>"; };
-		15F94A5B7652E2EDB585A527 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
+		0138E804A3FA8D7B79F09AE9 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		15F94A5B7652E2EDB585A527 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		6003F58A195388D20070C39A /* HLTest2_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HLTest2_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58D195388D20070C39A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		6003F58F195388D20070C39A /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -66,7 +66,7 @@
 		9541692C7F2C8E8F49115EA4 /* Pods-HLTest2_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HLTest2_Tests.release.xcconfig"; path = "Target Support Files/Pods-HLTest2_Tests/Pods-HLTest2_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		D1C843319A0C6E3910E000A2 /* Pods_HLTest2_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HLTest2_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D319AD55691F031754420FF8 /* Pods_HLTest2_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HLTest2_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		DA33F009967B6DB768B4AAC1 /* HLTest2.podspec */ = {isa = PBXFileReference; includeInIndex = 1; name = HLTest2.podspec; path = ../HLTest2.podspec; sourceTree = "<group>"; };
+		DA33F009967B6DB768B4AAC1 /* HLTest2.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = HLTest2.podspec; path = ../HLTest2.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,7 +103,6 @@
 				6947651A8CEB0FBDDEBD4209 /* Pods-HLTest2_Tests.debug.xcconfig */,
 				9541692C7F2C8E8F49115EA4 /* Pods-HLTest2_Tests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -259,6 +258,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);

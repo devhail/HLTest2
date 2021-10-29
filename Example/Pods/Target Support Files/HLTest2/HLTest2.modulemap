@@ -1,0 +1,6 @@
+framework module HLTest2 {
+  umbrella header "HLTest2-umbrella.h"
+
+  export *
+  module * { export * }
+}

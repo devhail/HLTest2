@@ -1,0 +1,203 @@
+//
+//  MPaaSBaseWebViewController.m
+//  CPSPlanner
+//
+//  Created by 胡中楷 on 2021/2/25.
+//  Copyright © 2021 dgg_hzk. All rights reserved.
+//
+
+#import "MPaaSBaseWebViewController.h"
+#import "MPaaSInterfaceModel.h"
+#import "CPSMPassRouterManager.h"
+#import <DGGUIKit/TipTool.h>
+#import <WebKit/WKWebView.h>
+#import <MPNebulaAdapter/MPH5ErrorHelper.h>
+#if __has_include(<HBDNavigationBar/UIViewController+HBD.h>)
+
+#import <HBDNavigationBar/UIViewController+HBD.h>
+#import "DGGCommonSDKUtils.h"
+
+#endif
+
+@interface MPaaSBaseWebViewController ()<CPSMPassRouterDelegate>
+
+@property(nonatomic,assign) BOOL isTinyApp;
+@property(nonatomic,assign) BOOL isHidden;
+@property(nonatomic,assign) BOOL isFirst;
+@property(nonatomic,assign) BOOL isHiddenNav;
+@property(nonatomic,strong) WKWebView * webViewH5;
+@property(nonatomic,strong) UIActivityIndicatorView * activityIndicator;
+
+@end
+
+@implementation MPaaSBaseWebViewController
+
+#pragma mark ----------------⚠️注意不要重写dealloc方法，会导致mpaas出问题----------------
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view.
+    
+    
+    
+//    self.navigationController.interactivePopGestureRecognizer.delegate = self;
+//    self.isHidden = self.navigationController.navigationBar.hidden;
+    self.isHidden = [DGGCommonSDKUtils currentViewController].navigationController.navigationBar.hidden;
+    
+    self.isTinyApp = [NBUtils isTinyAppWithSession:self.psdSession];
+    if (!self.isTinyApp) {
+//        self.options.gestureBack = NO;
+//        if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
+//            self.navigationController.interactivePopGestureRecognizer.enabled = NO;
+//        }
+//        [CPSMPassRouterManager sharedInstance].delegate = self;
+    }
+    self.isFirst = YES;
+    
+    self.isHiddenNav = [MPaaSInterfaceModel shareInstance].isHiddenNav;
+    
+}
+
+#pragma mark - 旋转菊花
+- (UIActivityIndicatorView *)activityIndicator{
+    if(!_activityIndicator){
+        _activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:(UIActivityIndicatorViewStyleGray)];
+        _activityIndicator.center = self.view.center;
+    
+        [self.view addSubview:_activityIndicator];
+    }
+    return _activityIndicator;
+}
+
+//- (void)cps_mPassRouterManagerExitAppParams:(NSDictionary *)routerParams completion:(void (^)(NSDictionary *))completion{
+//    [self.navigationController popViewControllerAnimated:YES];
+//}
+
+#pragma mark 拦截url 加载
+- (void)handleEvent:(PSDEvent *)event{
+    
+    [super handleEvent:event];
+
+    if ([kEvent_Page_Load_Start isEqualToString: event.eventType]) {//开始加载
+        NSLog(@"开始加载");
+        if (self.isFirst) {
+            [self showLoading];
+        }
+        self.isFirst = !self.isFirst;
+    }else if ([kEvent_Page_Load_Complete isEqualToString: event.eventType]){//加载成功
+        [self hideLoading];
+        NSLog(@"加载成功");
+    }else if([kEvent_Page_Load_Error isEqualToString: event.eventType]){//加载失败
+        [self handleContentViewDidFailLoad:(id)event];
+    }else if([kEvent_Navigation_Error isEqualToString: event.eventType]){//加载失败
+        [self handleContentViewDidFailLoad:(id)event];
+    }
+    
+}
+
+- (void)showLoading {
+//    [TipTool showLoadingViewWithSuperView:self.view loadingColor:[UIColor greenColor] message:@"努力加载中..." radius:20];
+    [self.activityIndicator startAnimating];
+}
+
+- (void)hideLoading {
+//    [TipTool hideLoadingViewInSuperView:self.view];
+    [self.activityIndicator stopAnimating];
+}
+
+- (void)mpassCall:(NSNotification *)noti{
+        NSMutableDictionary *param = noti.object;
+    [self callHandler:param[@"name"] data:param[@"data"]?:@{} responseCallback:^(id responseData) {
+            
+    }];
+}
+
+- (void)handleContentViewDidFailLoad:(PSDNavigationEvent *)event
+{
+    PSDNavigationEvent *naviEvent = (PSDNavigationEvent *)event;
+    NSError *error = naviEvent.error;
+    WKWebView *webView = (WKWebView*)event.context.currentViewController.psdContentView;
+    self.webViewH5 = webView;
+    [MPH5ErrorHelper handlErrorWithWebView:webView error:error];
+}
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hiddenNav) name:@"hiddenNav" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showNav) name:@"showNav" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadWebView) name:@"Reload" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mpassCall:) name:@"CPSMPaasCall" object:nil];
+    
+    if (self.isHiddenNav) {
+        [self hiddenNav];
+    }else{
+        [self showNav];
+    }
+    
+    if (self.isTinyApp) {
+        
+        #if __has_include(<HBDNavigationBar/UIViewController+HBD.h>)
+
+//            self.hbd_barTintColor = self.navigationController.navigationBar.backgroundColor;
+        self.hbd_barTintColor = [DGGCommonSDKUtils currentViewController].navigationController.navigationBar.backgroundColor;
+
+        #endif
+    }
+            
+}
+
+#pragma mark 重洗加载webView
+- (void)reloadWebView {
+    [self.webView reload];
+}
+
+-(void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+//    [MPaaSInterfaceModel shareInstance].isHiddenNav = NO;
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"showNav" object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"hiddenNav" object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"CPSMPaasCall" object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"Reload" object:nil];
+    
+//    self.navigationController.navigationBar.backgroundColor = UIColor.clearColor;
+    [DGGCommonSDKUtils currentViewController].navigationController.navigationBar.backgroundColor = UIColor.clearColor;
+    
+//    self.navigationController.navigationBar.hidden = self.isHidden;
+    [DGGCommonSDKUtils currentViewController].navigationController.navigationBar.hidden = self.isHidden;
+}
+
+-(void)didReceiveMemoryWarning {
+    
+}
+
+-(void)hiddenNav{
+//    self.navigationController.navigationBar.hidden = YES;
+    [DGGCommonSDKUtils currentViewController].navigationController.navigationBar.hidden = YES;
+    self.hbd_barAlpha = 0;
+    self.customNavigationBar = [UIView new];
+}
+
+-(void)showNav{
+//    self.navigationController.navigationBar.hidden = NO;
+    [DGGCommonSDKUtils currentViewController].navigationController.navigationBar.hidden = NO;
+    self.hbd_barAlpha = 1;
+}
+
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end
